@@ -1,0 +1,23 @@
+.gradle
+/local.properties
+.DS_Store
+
+# generated files
+bin/
+gen/
+build/
+.externalNativeBuild/
+
+# IDEA files
+.idea/
+*.iml
+proguard_logs/
+
+# Crashlytics
+com_crashlytics_export_strings.xml
+
+# GitEye generated file
+.project
+
+# ObjectBox model backup
+default.json.bak
