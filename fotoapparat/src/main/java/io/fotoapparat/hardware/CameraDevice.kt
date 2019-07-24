@@ -66,10 +66,6 @@ internal open class CameraDevice(
 
         try {
             camera = Camera.open(cameraId)
-            camera.parameters.supportedVideoSizes.forEach {
-                Log.v("PATH", "${it.width}x${it.height}")
-            }
-
             capabilities.complete(camera.getCapabilities())
             previewStream = PreviewStream(camera)
         } catch (e: RuntimeException) {

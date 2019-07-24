@@ -30,9 +30,11 @@ internal class CaptureActivity : AppCompatActivity() {
                 return@verifyPermission
             }
             captureManager.attachView(this, cameraView, lifecycle, getConfig())
-            captureManager.startVideoCapture {
-                //TODO Start ShareDialog
-                runOnUiThread { finish() }
+            captureManager.startVideoCapture { videoPath ->
+                runOnUiThread {
+                    val path = videoPath ?: return@runOnUiThread
+                    CaptureManager.showDialog(this, path)
+                }
             }
         }
 

@@ -1,10 +1,13 @@
 package com.mobidev.camera.video
 
 import android.content.Context
+import android.media.CamcorderProfile
 import android.media.MediaRecorder
+import android.os.Environment
 import com.mobidev.camera.CaptureConfig
 import java.util.*
 import kotlin.concurrent.schedule
+
 
 internal class VideoCaptureManager(
     private val context: Context,
@@ -28,12 +31,9 @@ internal class VideoCaptureManager(
         mediaRecorder?.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setVideoSource(MediaRecorder.VideoSource.CAMERA)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setOutputFile(videoAbsolutePath)
-            setVideoSize(1920, 1080)//TODO Should be configured
+            setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH))
             setVideoFrameRate(config.frameRate)
-            setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT)
-            setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+            setOutputFile(videoAbsolutePath)
             prepare()
         }
     }
@@ -56,9 +56,8 @@ internal class VideoCaptureManager(
     }
 
     private fun getVideoFilePath(context: Context): String {
-        val filename = "${System.currentTimeMillis()}.mp4"
-        val dir = context.getExternalFilesDir(null)
-
+        val filename = "video_" + System.currentTimeMillis() + ".mp4"
+        val dir = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)
         return if (dir == null) {
             filename
         } else {

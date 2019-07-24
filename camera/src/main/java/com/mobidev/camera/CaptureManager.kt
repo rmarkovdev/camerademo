@@ -14,6 +14,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.mobidev.camera.ui.CaptureActivity
+import com.mobidev.camera.ui.ShareDialog
 import com.mobidev.camera.video.VideoCaptureManager
 import io.fotoapparat.Fotoapparat
 import io.fotoapparat.parameter.ScaleType
@@ -33,14 +34,21 @@ open class CaptureManager internal constructor() : LifecycleObserver {
                     viewGroup.addView(cameraView)
                     val captureManager = CaptureManager()
                     captureManager.attachView(activity, cameraView, activity.lifecycle, config)
-                    captureManager.startVideoCapture {
+                    captureManager.startVideoCapture { videoPath ->
                         activity.runOnUiThread {
                             viewGroup.removeView(cameraView)
+                            val path = videoPath ?: return@runOnUiThread
+                            showDialog(activity, path)
                         }
-
                     }
                 }
             }
+        }
+
+        internal fun showDialog(activity: AppCompatActivity, videoPath: String) {
+            val dialog = ShareDialog()
+            dialog.filePath = videoPath
+            dialog.show(activity.supportFragmentManager, "ShareDialog")
         }
 
         internal fun verifyPermission(activity: Activity, allGranted: (Boolean) -> Unit) {
@@ -80,15 +88,16 @@ open class CaptureManager internal constructor() : LifecycleObserver {
         lifecycle.addObserver(this)
     }
 
-    internal fun startVideoCapture(captureEnd: () -> Unit) {
+    internal fun startVideoCapture(captureEnd: (String?) -> Unit) {
         val videoCaptureManager = videoCaptureManager ?: return
         cameraManager?.start()
         videoCaptureManager.setupMediaRecorder {
             cameraManager?.attachRecordingCamera(it) {
                 videoCaptureManager.prepare()
-                videoCaptureManager.startRecordingVideo {
+                videoCaptureManager.startRecordingVideo { videoPath ->
                     cameraManager?.lock()
-                    captureEnd()
+                    onStop()
+                    captureEnd(videoPath)
                 }
             }
         }

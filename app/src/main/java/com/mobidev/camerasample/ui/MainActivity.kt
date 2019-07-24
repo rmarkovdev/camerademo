@@ -13,12 +13,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        capture_activity_button.setOnClickListener {
-            CaptureManager.startCaptureActivity(this, CaptureConfig(5, 24))
+        captureActivityButton.setOnClickListener {
+            CaptureManager.startCaptureActivity(this, configuration())
         }
 
-        capture_view_button.setOnClickListener {
-            CaptureManager.startCaptureOnView(this, group, CaptureConfig.defaultConfig())
+        captureViewButton.setOnClickListener {
+            CaptureManager.startCaptureOnView(this, previewFrameLayout, configuration())
         }
     }
+
+
+    private fun configuration(): CaptureConfig {
+        return CaptureConfig(
+            Integer.parseInt(durationSpinner.selectedItem.toString()),
+            Integer.parseInt(frameRateSpinner.selectedItem.toString())
+        )
+    }
+
+
 }
